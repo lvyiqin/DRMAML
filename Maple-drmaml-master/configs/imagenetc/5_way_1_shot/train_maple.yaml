@@ -1,0 +1,66 @@
+dataset: imagenetc
+train:
+  split: meta-train
+  image_size: 224
+  normalization: False
+  transform: null
+  n_batch: 200
+  n_episode: 8
+  n_pick: 4
+  n_way: 5
+  n_shot: 1
+  n_query: 15
+val:
+  split: meta-val
+  image_size: 224
+  normalization: False
+  transform: null
+  n_batch: 100
+  n_episode: 8
+  n_way: 5
+  n_shot: 1
+  n_query: 1
+
+backbone: ViT-B/16
+
+inner_args:
+  n_step: 5
+  encoder_lr: 0.01
+  classifier_lr: 0.01
+  first_order: False  # set to True for FOMAML
+  frozen:
+    - bn
+
+
+INPUT:
+  SIZE: (224, 224)
+  INTERPOLATION: "bicubic"
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  TRANSFORMS: ["random_resized_crop", "random_flip", "normalize"]
+
+OPTIM:
+  NAME: "sgd"
+  LR: 0.0035
+  MAX_EPOCH: 5
+  LR_SCHEDULER: "cosine"
+  WARMUP_EPOCH: 1
+  WARMUP_TYPE: "constant"
+  WARMUP_CONS_LR: 1e-5
+
+TRAIN:
+  PRINT_FREQ: 20
+
+MODEL:
+  BACKBONE:
+    NAME: "ViT-B/16"
+
+TRAINER:
+  MAPLE:
+    N_CTX: 2
+    CTX_INIT: "a photo of a"
+    PREC: "fp32"
+    PROMPT_DEPTH: 9
+    MAX_EPOCH: 50
+
+epoch: 50
